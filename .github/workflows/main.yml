@@ -1,4 +1,4 @@
-name: Total Repair Build
+name: Final Smooth Build
 on: [push]
 jobs:
   build:
@@ -8,16 +8,11 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Hard Reset and Repair
-        run: |
-          rm -rf android
-          flutter create . --platforms android
+      - run: |
           flutter pub get
+          flutter clean
           flutter build apk --release --no-tree-shake-icons
-      
-      - name: Upload Success APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: Ultra-KZ-Final
           path: build/app/outputs/flutter-apk/app-release.apk
