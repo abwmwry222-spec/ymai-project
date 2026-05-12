@@ -8,12 +8,15 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Force Create Android
+          flutter-version: '3.19.0' # تحديد نسخة مستقرة لضمان التوافق
+
+      - name: Force Clean and Rebuild
         run: |
-          rm -rf android
           flutter create . --platforms android
+          cd android && ./gradlew clean && cd ..
           flutter pub get
-          flutter build apk --release
+          flutter build apk --release --no-tree-shake-icons
+      
       - uses: actions/upload-artifact@v4
         with:
           name: app-release
