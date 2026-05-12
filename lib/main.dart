@@ -8,11 +8,8 @@ class UltraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ultra K.Z',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        useMaterial3: true,
-      ),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(brightness: Brightness.dark, primaryColor: Colors.amber),
       home: const MainScreen(),
     );
   }
@@ -24,81 +21,92 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0F0F0F),
       appBar: AppBar(
-        title: const Text('Ultra K.Z Store'),
+        title: const Text('K.Z ULTRA TOOLS', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.stars, color: Colors.amber),
-            onPressed: () => _showVIPDialog(context),
-          )
+          IconButton(icon: const Icon(Icons.workspace_premium, color: Colors.amber), onPressed: () => _vipAccess(context)),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          // القسم الخاص بالمتاجر والقوالب
-          GridView.builder(
-            padding: const EdgeInsets.all(10),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemCount: 6, // عدد القوالب
-            itemBuilder: (context, index) => Card(
-              child: Column(
-                children: [
-                  const Expanded(child: Icon(Icons.auto_awesome, size: 50, color: Colors.deepPurple)),
-                  const Text('قالب جبار #1'),
-                  ElevatedButton(
-                    onPressed: () => _processPayment(context),
-                    child: const Text('شراء'),
-                  )
-                ],
-              ),
+          _buildHeader(),
+          Expanded(
+            child: GridView.count(
+              padding: const EdgeInsets.all(15),
+              crossAxisCount: 2,
+              mainAxisSpacing: 15,
+              crossAxisSpacing: 15,
+              children: [
+                _buildToolCard(context, 'إزالة الخلفية', Icons.auto_fix_high, Colors.blueAccent),
+                _buildToolCard(context, 'مونتاج سريع', Icons.video_camera_back, Colors.redAccent),
+                _buildToolCard(context, 'فلاتر نيون', Icons.palette, Colors.purpleAccent),
+                _buildToolCard(context, 'قوالب جبارة', Icons.Layers, Colors.greenAccent),
+              ],
             ),
           ),
-          
-          // العلامة المائية K.Z
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: Opacity(
-              opacity: 0.3,
-              child: Row(
-                children: const [
-                  Icon(Icons.verified, size: 16),
-                  SizedBox(width: 5),
-                  Text('K.Z Developed', style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
-          ),
+          _buildWatermark(),
         ],
       ),
     );
   }
 
-  // نظام الدفع للمحفظة
-  void _processPayment(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: const Text("ماذا سنصنع اليوم؟", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300)),
+    );
+  }
+
+  Widget _buildToolCard(BuildContext context, String title, IconData icon, Color color) {
+    return InkWell(
+      onTap: () => _openTool(context, title),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('إتمام الدفع إلى محفظة K.Z', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const ListTile(leading: Icon(Icons.wallet), title: Text('رصيد المحفظة')),
-            ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('تأكيد العملية'))
+            Icon(icon, size: 45, color: color),
+            const SizedBox(height: 15),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
 
-  void _showVIPDialog(BuildContext context) {
-    showDialog(
+  Widget _buildWatermark() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Opacity(
+        opacity: 0.4,
+        child: Text('PROUDLY DEVELOPED BY K.Z', style: TextStyle(fontSize: 10, letterSpacing: 3, color: Colors.amber[100])),
+      ),
+    );
+  }
+
+  void _openTool(BuildContext context, String name) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('جاري فتح أداة $name بسلاسة...'), behavior: SnackBarBehavior.floating),
+    );
+  }
+
+  void _vipAccess(BuildContext context) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('اشتراك VIP'),
-        content: const Text('احصل على تصاميم مذهلة وحصرية الآن!'),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('اشترك الآن'))],
+      backgroundColor: Colors.amber,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(30),
+        child: const Text('مرحباً بك في عالم VIP K.Z - جميع الأدوات مفتوحة الآن!', 
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
       ),
     );
   }
