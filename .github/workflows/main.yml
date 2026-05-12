@@ -1,4 +1,4 @@
-name: Build APK
+name: Repair and Build
 on: [push]
 jobs:
   build:
@@ -8,21 +8,17 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Repair and Build
+          
+      - name: Force Repair and Build
         run: |
-          # تنظيف أي ملفات قديمة مسببة للخطأ
-          rm -rf android
-          flutter create . --platforms android
-          
-          # أمر سحري لإصلاح أذونات بناء أندرويد داخل السيرفر
-          chmod +x android/gradlew
-          
+          flutter config --no-analytics
           flutter pub get
-          # بناء APK مع تجاوز أخطاء الأيقونات لضمان النجاح
+          # هذا الأمر سيصلح ملفات أندرويد التي سببت الخطأ
+          flutter create . --platforms android
           flutter build apk --release --no-tree-shake-icons
-
-      - uses: actions/upload-artifact@v4
+      
+      - name: Upload Repaired APK
+        uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: Ultra-KZ-Fixed
           path: build/app/outputs/flutter-apk/app-release.apk
