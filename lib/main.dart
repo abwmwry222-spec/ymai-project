@@ -13,8 +13,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'YMAI App',
-      theme: ThemeData(useMaterial3: true),
-      home: const YmaiPage(), // استدعاء شاشتك المتطورة
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      home: const YmaiPage(), 
     );
   }
 }
