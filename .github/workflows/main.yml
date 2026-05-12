@@ -1,4 +1,4 @@
-name: Ultimate Success Build
+name: Super Fix Build
 on: [push]
 jobs:
   build:
@@ -9,20 +9,18 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Force Clean and Re-Generate
+      - name: Force Recreate and Build
         run: |
-          flutter config --no-analytics
-          # مسح أي أثر للفشل القديم
-          rm -rf android
-          rm -rf ios
-          # إعادة إنشاء ملفات النظام من جديد تماماً
+          # حذف الملفات المعطلة نهائياً
+          rm -rf android pubspec.lock
+          # إعادة إنشاء المشروع من الصفر كما طلبت الرسالة في الصورة
           flutter create . --platforms android --project-name=ultra_kz_pro
           flutter pub get
-          # بناء النسخة النهائية
+          # بناء الـ APK النهائي
           flutter build apk --release --no-tree-shake-icons
       
-      - name: Upload K.Z Master APK
+      - name: Upload Master APK
         uses: actions/upload-artifact@v4
         with:
-          name: K.Z-Supreme-Final
+          name: KZ-Supreme-Final
           path: build/app/outputs/flutter-apk/app-release.apk
