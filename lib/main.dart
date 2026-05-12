@@ -1,139 +1,139 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-void main() => runApp(const UltraApp());
+void main() => runApp(const UltraKZApp());
 
-class UltraApp extends StatelessWidget {
-  const UltraApp({super.key});
+class UltraKZApp extends StatelessWidget {
+  const UltraKZApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        primaryColor: Colors.amber,
-        scaffoldBackgroundColor: const Color(0xFF0A0A0A),
-      ),
-      home: const SplashScreen(),
+      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: const Color(0xFF020202)),
+      home: const KZMainDashboard(),
     );
   }
 }
 
-// شاشة الترحيب الاحترافية بالشعار الذهبي
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class KZMainDashboard extends StatefulWidget {
+  const KZMainDashboard({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<KZMainDashboard> createState() => _KZMainDashboardState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const MainHomeScreen())
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.amber, width: 1.5),
-                boxShadow: [
-                  BoxShadow(color: Colors.amber.withOpacity(0.1), blurRadius: 30, spreadRadius: 5)
-                ],
-              ),
-              child: const Text(
-                'K.Z',
-                style: TextStyle(
-                  fontSize: 55, 
-                  fontWeight: FontWeight.bold, 
-                  color: Colors.amber, 
-                  letterSpacing: 8
-                ),
-              ),
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              'ULTRA EDITING SUITE',
-              style: TextStyle(color: Colors.white38, letterSpacing: 4, fontSize: 12),
-            ),
-            const SizedBox(height: 50),
-            const CircularProgressIndicator(color: Colors.amber, strokeWidth: 2),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// الواجهة الرئيسية (المتجر والأدوات)
-class MainHomeScreen extends StatelessWidget {
-  const MainHomeScreen({super.key});
+class _KZMainDashboardState extends State<KZMainDashboard> {
+  // ميزة المبرمج: إذا كان هذا أنت، كل شيء مجاني!
+  bool isDeveloper = true; 
+  double myBalance = 999999; // رصيدك الخيالي كمطور
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('K.Z DASHBOARD', style: TextStyle(fontSize: 16, letterSpacing: 2)),
+        title: const Text('K.Z PRO STUDIO', style: TextStyle(letterSpacing: 3, fontWeight: FontWeight.w900)),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        actions: [
+          if (isDeveloper) const Icon(Icons.admin_panel_settings, color: Colors.cyanAccent),
+          const SizedBox(width: 15),
+        ],
       ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Text("أدوات التصميم والمونتاج", style: TextStyle(fontSize: 18, color: Colors.amber)),
-          ),
-          Expanded(
-            child: GridView.count(
-              padding: const EdgeInsets.all(20),
-              crossAxisCount: 2,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
-              children: [
-                _toolCard('المونتاج الذكي', Icons.movie_filter, Colors.blue),
-                _toolCard('متجر القوالب', Icons.grid_view_rounded, Colors.purple),
-                _toolCard('VIP محفظة', Icons.account_balance_wallet, Colors.orange),
-                _toolCard('تصدير بدقة 4K', Icons.high_quality, Colors.green),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 20),
-            child: Text('PROUDLY BY K.Z', style: TextStyle(color: Colors.white10, letterSpacing: 5)),
-          )
+          _buildVIPCard(),
+          _buildActionButtons(),
+          const Divider(color: Colors.white10),
+          Expanded(child: _buildUltimateStore()),
+          _buildPersistentWatermark(), // العلامة التجارية التي تظهر دائماً
         ],
       ),
     );
   }
 
-  Widget _toolCard(String title, IconData icon, Color color) {
+  Widget _buildVIPCard() {
     return Container(
+      margin: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white10),
+        gradient: const LinearGradient(colors: [Color(0xFFD4AF37), Color(0xFF8A6E2F)]),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.amber.withOpacity(0.3), blurRadius: 20)],
       ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('DEVELOPER ACCESS', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10)),
+              Text(isDeveloper ? 'UNLIMITED K-COINS' : '$myBalance K-Coins', 
+                  style: const TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w900)),
+            ],
+          ),
+          const Icon(Icons.verified, color: Colors.black, size: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _quickAction(Icons.video_call, 'إنشاء فيديو'),
+        _quickAction(Icons.photo_library, 'تصميم صورة'),
+        _quickAction(Icons.download_for_offline, 'المحفوظات'),
+      ],
+    );
+  }
+
+  Widget _quickAction(IconData icon, String label) {
+    return Column(
+      children: [
+        CircleAvatar(backgroundColor: Colors.white10, child: Icon(icon, color: Colors.amberAccent)),
+        const SizedBox(height: 5),
+        Text(label, style: const TextStyle(fontSize: 10, color: Colors.white60)),
+      ],
+    );
+  }
+
+  Widget _buildUltimateStore() {
+    return GridView.count(
+      crossAxisCount: 2,
+      padding: const EdgeInsets.all(15),
+      children: [
+        _storeModule('قوالب تيك توك', Icons.auto_videocam),
+        _storeModule('مقدمات 4K', Icons.movie_creation),
+        _storeModule('أدوات المونتاج', Icons.architecture),
+        _storeModule('متجر الخطوط', Icons.text_fields),
+      ],
+    );
+  }
+
+  Widget _storeModule(String name, IconData icon) {
+    return Card(
+      color: Colors.white.withOpacity(0.02),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.white10)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 40),
+          Icon(icon, size: 40, color: Colors.amberAccent),
           const SizedBox(height: 10),
-          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+          Text(name, style: const TextStyle(fontSize: 12)),
+          if (isDeveloper) const Text('FREE FOR YOU', style: TextStyle(color: Colors.cyanAccent, fontSize: 8)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPersistentWatermark() {
+    return Container(
+      width: double.infinity,
+      color: Colors.black,
+      padding: const EdgeInsets.all(10),
+      child: const Center(
+        child: Text('PROTECTED BY K.Z OFFICIAL MARK', 
+        style: TextStyle(color: Colors.white10, fontSize: 9, letterSpacing: 4, fontWeight: FontWeight.bold)),
       ),
     );
   }
