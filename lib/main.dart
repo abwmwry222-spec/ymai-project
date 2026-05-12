@@ -9,19 +9,18 @@ class PhotoshopStudio extends StatefulWidget {
 }
 
 class _PhotoshopStudioState extends State<PhotoshopStudio> {
-  // قائمة الطبقات الحقيقية (نصوص، صور، فلاتر)
   List<Widget> layers = [];
+  double brightness = 1.0; // ميزة حقيقية للتحكم في الإضاءة
 
   void addTextLayer() {
     setState(() {
       layers.add(
         Positioned(
-          top: 100,
+          top: 150,
           left: 100,
           child: Draggable(
-            feedback: const Text("نص جديد", style: TextStyle(fontSize: 24, color: Colors.blue)),
-            childWhenDragging: Container(),
-            child: const Text("نص جديد", style: TextStyle(fontSize: 24, color: Colors.white)),
+            feedback: const Text("K.Z DESIGN", style: TextStyle(fontSize: 30, color: Colors.blueAccent)),
+            child: const Text("K.Z DESIGN", style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ),
       );
@@ -31,18 +30,27 @@ class _PhotoshopStudioState extends State<PhotoshopStudio> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A), // لون خلفية احترافي
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('استوديو YMAI الاحترافي'),
+        title: const Text('K.Z Photoshop Pro'), // اسم علامتك التجارية
         backgroundColor: Colors.black,
-        actions: [IconButton(icon: const Icon(Icons.save), onPressed: () {})],
-      ),
-      body: Stack(
-        children: [
-          // مساحة العمل (الطبقات تظهر هنا فوق بعضها)
-          Center(child: Container(color: Colors.grey[900], width: 300, height: 500)),
-          ...layers, 
+        actions: [
+          IconButton(icon: const Icon(Icons.check, color: Colors.green), onPressed: () {}),
         ],
+      ),
+      body: ColorFiltered(
+        colorFilter: ColorFilter.matrix([
+          brightness, 0, 0, 0, 0,
+          0, brightness, 0, 0, 0,
+          0, 0, brightness, 0, 0,
+          0, 0, 0, 1, 0,
+        ]),
+        child: Stack(
+          children: [
+            Center(child: Container(color: Colors.grey[900], width: 350, height: 550, child: const Icon(Icons.add_a_photo, size: 50, color: Colors.white24))),
+            ...layers,
+          ],
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.black,
@@ -50,9 +58,10 @@ class _PhotoshopStudioState extends State<PhotoshopStudio> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(icon: const Icon(Icons.text_fields, color: Colors.white), onPressed: addTextLayer),
-            IconButton(icon: const Icon(Icons.image, color: Colors.white), onPressed: () {}), // إضافة صورة
-            IconButton(icon: const Icon(Icons.layers, color: Colors.white), onPressed: () {}), // إدارة الطبقات
-            IconButton(icon: const Icon(Icons.auto_fix_high, color: Colors.white), onPressed: () {}), // الفلاتر
+            IconButton(icon: const Icon(Icons.wb_sunny, color: Colors.yellow), 
+              onPressed: () => setState(() => brightness += 0.1)), // زيادة الإضاءة حقيقية
+            IconButton(icon: const Icon(Icons.auto_fix_high, color: Colors.purpleAccent), onPressed: () {}), // فلاتر K.Z
+            IconButton(icon: const Icon(Icons.layers, color: Colors.blue), onPressed: () {}),
           ],
         ),
       ),
