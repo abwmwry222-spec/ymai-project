@@ -1,10 +1,7 @@
 name: Build Flutter APK
 on:
   push:
-    branches:
-      - main
-      - master
-      - رئيسي
+    branches: [ "main", "master", "رئيسي" ]
 
 jobs:
   build:
@@ -14,8 +11,12 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+      
+      - run: flutter create . --platforms=android
+      
       - run: flutter pub get
       - run: flutter build apk --release
+      
       - uses: actions/upload-artifact@v4
         with:
           name: Photoshop-App-Release
