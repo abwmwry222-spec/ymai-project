@@ -1,18 +1,32 @@
 name: Build APK
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      # إضافة الجافا المناسبة دون تغيير ملفاتك
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter pub get
-      - run: flutter build apk --release
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+
+      - name: Build APK
+        run: |
+          # تحديث المكتبات التي أضفتها أنت فقط
+          flutter pub get
+          # بناء التطبيق مع الحفاظ على كل إعداداتك
+          flutter build apk --release --no-tree-shake-icons
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: my-app-apk
+          name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
-          
