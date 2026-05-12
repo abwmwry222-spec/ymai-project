@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // ضروري للاهتزاز الفيزيائي
 import 'dart:async';
 
 void main() => runApp(const UltraKZApp());
@@ -9,16 +10,15 @@ class UltraKZApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF020202),
-        primaryColor: Colors.amber,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF000000), // أسود OLED فخم
       ),
       home: const KZSplashScreen(),
     );
   }
 }
 
-// 1. شاشة الترحيب (LOGO)
 class KZSplashScreen extends StatefulWidget {
   const KZSplashScreen({super.key});
   @override
@@ -30,163 +30,114 @@ class _KZSplashScreenState extends State<KZSplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const KZMainHandler()));
+      HapticFeedback.heavyImpact(); // اهتزاز عند الدخول
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const KZUltimateHome()));
     });
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
+        child: Text('K.Z', style: TextStyle(fontSize: 70, fontWeight: FontWeight.w900, color: Color(0xFFD4AF37), letterSpacing: 15)),
+      ),
+    );
+  }
+}
+
+class KZUltimateHome extends StatefulWidget {
+  const KZUltimateHome({super.key});
+  @override
+  _KZUltimateHomeState createState() => _KZUltimateHomeState();
+}
+
+class _KZUltimateHomeState extends State<KZUltimateHome> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('K.Z SUPREME STUDIO', style: TextStyle(fontSize: 14, letterSpacing: 3, color: Color(0xFFD4AF37))),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: _buildBody(),
+      bottomNavigationBar: _buildLegendaryNav(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_index == 0) return _buildStore();
+    if (_index == 1) return _buildWallet();
+    return const Center(child: Text('إعدادات المطور K.Z'));
+  }
+
+  Widget _buildStore() {
+    return GridView.count(
+      crossAxisCount: 2,
+      padding: const EdgeInsets.all(20),
+      mainAxisSpacing: 20, crossAxisSpacing: 20,
+      children: [
+        _legendaryCard('تيك توك تريند', Icons.flash_on, Colors.pinkAccent),
+        _legendaryCard('مقدمات 4K', Icons.movie_filter, Colors.blueAccent),
+        _legendaryCard('خطوط ملكية', Icons.text_format, Colors.orangeAccent),
+        _legendaryCard('VIP قوالب', Icons.workspace_premium, Colors.amber),
+      ],
+    );
+  }
+
+  Widget _legendaryCard(String title, IconData icon, Color color) {
+    return InkWell(
+      onTap: () {
+        HapticFeedback.mediumImpact(); // اهتزاز عند الضغط
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF0A0A0A),
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.amber, width: 2),
-                boxShadow: [BoxShadow(color: Colors.amber.withOpacity(0.2), blurRadius: 30)],
-              ),
-              child: const Text('K.Z', style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.amber, letterSpacing: 8)),
-            ),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(color: Colors.amber, strokeWidth: 1),
+            Icon(icon, color: color, size: 40),
+            const SizedBox(height: 10),
+            Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
-}
 
-// 2. معالج الشاشات (الشريط السفلي المريح)
-class KZMainHandler extends StatefulWidget {
-  const KZMainHandler({super.key});
-  @override
-  _KZMainHandlerState createState() => _KZMainHandlerState();
-}
-
-class _KZMainHandlerState extends State<KZMainHandler> {
-  int _selectedIndex = 0;
-  
-  // وضع المطور الملكي (كل شيء مجاني لك)
-  final bool isDeveloper = true;
-
-  @override
-  Widget build(BuildContext context) {
-    final List<Widget> pages = [
-      _buildStorePage(),    // المتاجر
-      _buildWalletPage(),   // المحفظة
-      _buildCreatorPage(),  // أدوات المونتاج والتصميم
-    ];
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('K.Z SUPREME STUDIO', style: TextStyle(letterSpacing: 2, fontSize: 14)),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      body: Stack(
-        children: [
-          pages[_selectedIndex],
-          _buildPersistentWatermark(), // العلامة المائية الثابتة
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        selectedItemColor: Colors.amber,
-        unselectedItemColor: Colors.white24,
-        backgroundColor: const Color(0xFF050505),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'المتاجر'),
-          BottomNavigationBarItem(icon: Icon(Icons.wallet_membership), label: 'المحفظة'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'التصميم'),
-        ],
-      ),
-    );
-  }
-
-  // صفحة المتاجر الشاملة
-  Widget _buildStorePage() {
-    return GridView.count(
-      crossAxisCount: 2,
-      padding: const EdgeInsets.all(20),
-      mainAxisSpacing: 15, crossAxisSpacing: 15,
-      children: [
-        _storeCard('تيك توك تريند', Icons.bolt, Colors.pinkAccent),
-        _storeCard('مقدمات فيديو', Icons.play_circle, Colors.blueAccent),
-        _storeCard('خطوط عربية', Icons.text_fields, Colors.orangeAccent),
-        _storeCard('قوالب VIP', Icons.stars, Colors.amber),
-      ],
-    );
-  }
-
-  // صفحة المحفظة الذهبية
-  Widget _buildWalletPage() {
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFFD4AF37), Color(0xFF000000)]),
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('K-COINS BALANCE', style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold)),
-                  Text(isDeveloper ? 'UNLIMITED' : '2,500', style: const TextStyle(color: Colors.black, fontSize: 26, fontWeight: FontWeight.w900)),
-                ],
-              ),
-              const Icon(Icons.account_balance_wallet, color: Colors.black, size: 40),
-            ],
-          ),
-        ),
-        const Text('جميع الميزات مفتوحة لك كمطور 👑', style: TextStyle(color: Colors.amber, fontSize: 12)),
-      ],
-    );
-  }
-
-  // صفحة التصميم والمونتاج
-  Widget _buildCreatorPage() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _actionBtn('بدء مونتاج فيديو', Icons.video_collection),
-          const SizedBox(height: 20),
-          _actionBtn('تصميم صورة احترافية', Icons.add_photo_alternate),
-        ],
-      ),
-    );
-  }
-
-  Widget _storeCard(String title, IconData icon, Color color) {
+  Widget _buildWallet() {
     return Container(
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.03), borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white10)),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, color: color, size: 35), const SizedBox(height: 10), Text(title, style: const TextStyle(fontSize: 12))]),
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(40),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        gradient: const LinearGradient(colors: [Color(0xFFD4AF37), Color(0xFF000000)]),
+      ),
+      child: const Center(
+        child: Text('K-COINS: UNLIMITED 👑', style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w900)),
+      ),
     );
   }
 
-  Widget _actionBtn(String label, IconData icon) {
-    return ElevatedButton.icon(
-      onPressed: () {},
-      icon: Icon(icon, color: Colors.black),
-      label: Text(label, style: const TextStyle(color: Colors.black)),
-      style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-    );
-  }
-
-  Widget _buildPersistentWatermark() {
-    return Positioned(
-      bottom: 10, left: 0, right: 0,
-      child: Center(child: Text('DESIGNED BY K.Z OFFICIAL', style: TextStyle(color: Colors.white.withOpacity(0.05), fontSize: 8, letterSpacing: 5))),
+  Widget _buildLegendaryNav() {
+    return BottomNavigationBar(
+      currentIndex: _index,
+      onTap: (i) {
+        HapticFeedback.lightImpact();
+        setState(() => _index = i);
+      },
+      selectedItemColor: const Color(0xFFD4AF37),
+      backgroundColor: Colors.black,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'المتجر'),
+        BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'المحفظة'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings_suggest), label: 'المطور'),
+      ],
     );
   }
 }
