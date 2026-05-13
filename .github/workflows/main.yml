@@ -1,4 +1,4 @@
-name: Fixed Action Build
+name: Ultimate Fix and Build
 on: [push]
 jobs:
   build:
@@ -8,9 +8,14 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: |
+      - name: Recreate Android and Build
+        run: |
+          # حذف مجلد أندرويد القديم التالف نهائياً
+          rm -rf android
+          # إجبار فلاتر على إنشاء مجلد أندرويد حديث ومتوافق
+          flutter create . --platforms android --project-name=ultra_kz_pro
           flutter pub get
-          flutter clean
+          # بناء الـ APK المستقر والنهائي
           flutter build apk --release --no-tree-shake-icons
       - uses: actions/upload-artifact@v4
         with:
