@@ -1,20 +1,30 @@
-name: Ultimate Fix and Build
+name: Ultimate Clean and Build
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Recreate Android and Build
+          
+      - name: Hard Reset and Generate Brand New Project
         run: |
-          rm -rf android
+          # مسح كاش ومجلدات النظام القديمة نهائياً
+          rm -rf android ios web windows macos linux .dart_tool pubspec.lock
+          
+          # إعادة توليد ملفات أندرويد جديدة ونظيفة متوافقة 100% مع إصدار فلاتر الحديث
           flutter create . --platforms android --project-name=ultra_kz_pro
+          
+          # جلب المكتبات المستقرة فقط
           flutter pub get
+          
+          # بناء الـ APK الاحترافي النهائي
           flutter build apk --release --no-tree-shake-icons
+          
       - uses: actions/upload-artifact@v4
         with:
-          name: KZ-Supreme-Final
+          name: KZ-CapCut-Final
           path: build/app/outputs/flutter-apk/app-release.apk
