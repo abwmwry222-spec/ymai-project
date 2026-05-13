@@ -1,4 +1,4 @@
-name: Ultimate Gradle Fix and Build
+name: Absolute Fix and Target Build
 on: [push]
 jobs:
   build:
@@ -10,18 +10,21 @@ jobs:
         with:
           channel: 'stable'
           
-      - name: Auto Repair Android Project and Build
+      - name: Hard Overwrite and Inject Code
         run: |
-          # إصلاح وتحديث ملفات أندرويد والـ Gradle الداخلية لتتوافق مع إصدار فلاتر الحديث
-          flutter create . --platforms android --overwrite
+          # 1. تنظيف ومسح مجلد أندرويد القديم المسبب للتعارض والرفض
+          rm -rf android pubspec.lock
           
-          # جلب الإعدادات المستقرة
+          # 2. إعادة إنشاء هيكل أندرويد حديث ونظيف متوافق مع خوادم جوجل
+          flutter create . --platforms android --project-name=ultra_kz_pro
+          
+          # 3. التأكد من تنزيل المكتبات والاعتمادية السليمة لـ Material Design
           flutter pub get
           
-          # البناء النظيف للـ APK النهائي
+          # 4. بناء نسخة الـ APK الحقيقية وتجميع الأكواد من ملف main.dart مباشرة
           flutter build apk --release --no-tree-shake-icons
           
       - uses: actions/upload-artifact@v4
         with:
-          name: KZ-Supreme-Camera-Final
+          name: KZ-Supreme-Real-Studio
           path: build/app/outputs/flutter-apk/app-release.apk
