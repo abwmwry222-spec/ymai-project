@@ -19,7 +19,7 @@ class CapCutKZApp extends StatelessWidget {
   }
 }
 
-// واجهة ترحيبية K.Z
+// 1. الواجهة الترحيبية الاحترافية الفخمة
 class KZSplashScreen extends StatefulWidget {
   const KZSplashScreen({super.key});
   @override
@@ -59,7 +59,7 @@ class _KZSplashScreenState extends State<KZSplashScreen> {
   }
 }
 
-// معالج التطبيق الرئيسي (شريط التنقل السفلي)
+// معالج التطبيق الرئيسي للتنقل بمرونة وسهولة
 class KZAppHandler extends StatefulWidget {
   const KZAppHandler({super.key});
   @override
@@ -72,8 +72,8 @@ class _KZAppHandlerState extends State<KZAppHandler> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      const VideoEditorScreen(), // 1. استوديو المونتاج (CapCut)
-      const TikTokCameraScreen(), // 2. واجهة الكاميرا الاحترافية (تيك توك)
+      const VideoEditorScreen(), // استوديو المونتاج (CapCut)
+      const TikTokCameraScreen(), // واجهة الكاميرا الاحترافية (تيك توك)
     ];
 
     return Scaffold(
@@ -92,7 +92,7 @@ class _KZAppHandlerState extends State<KZAppHandler> {
   }
 }
 
-// 🎬 الشاشة الأولى: استوديو المونتاج (CapCut الواجهة الاحترافية)
+// 🎬 الواجهة الأولى: استوديو المونتاج (CapCut بكافة خياراته الفرعية)
 class VideoEditorScreen extends StatefulWidget {
   const VideoEditorScreen({super.key});
   @override
@@ -137,7 +137,7 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
   Widget _buildContent(String type) {
     if (type == "cut") {
       return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        _btn("تقسيم", Icons.call_split, () => setState(() { _isCut = true; _toolText = "تم تقسيم المقطع الزمني بنجاح ✂️"; Navigator.pop(context); })),
+        _btn("تقسيم مقطع", Icons.call_split, () => setState(() { _isCut = true; _toolText = "تم تقسيم المقطع الزمني بنجاح ✂️"; Navigator.pop(context); })),
         _btn("حذف البدء", Icons.trending_left, () => setState(() { _toolText = "تم قص بداية الفيديو"; Navigator.pop(context); })),
       ]);
     }
@@ -188,7 +188,7 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
   Widget _bTool(String l, IconData i, VoidCallback act) => InkWell(onTap: act, child: SizedBox(width: 90, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(i, size: 20), const SizedBox(height: 4), Text(l, style: const TextStyle(fontSize: 11))])));
 }
 
-// 📸 الشاشة الثانية: واجهة الكاميرا الاحترافية التفاعلية المطابقة لـ (تيك توك) 
+// 📸 الواجهة الثانية: واجهة الكاميرا الاحترافية التفاعلية المطابقة لـ (تيك توك)
 class TikTokCameraScreen extends StatefulWidget {
   const TikTokCameraScreen({super.key});
   @override
@@ -241,13 +241,12 @@ class _TikTokCameraScreenState extends State<TikTokCameraScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // خلفية تحاكي شاشة الكاميرا والعدسة
-          Positioned.fill(child: AnimatedContainer(duration: const Duration(milliseconds: 300), color: _camFilter.syncWith(_isRecording ? Colors.red.withOpacity(0.05) : Colors.grey.shade900))),
+          // شاشة عرض عدسة الكاميرا
+          Positioned.fill(child: AnimatedContainer(duration: const Duration(milliseconds: 300), color: _isRecording ? Colors.red.withOpacity(0.05) : Colors.grey.shade900)),
           
-          // شعار الكاميرا المركزي وحالتها
           Center(child: Text(_isRecording ? "REC: 00:${_recordSecs.toString().padLeft(2, '0')}" : _cameraStatus, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: _isRecording ? Colors.red : Colors.white70, fontWeight: FontWeight.bold))),
 
-          // شريط الأدوات الجانبي الذكي (تغيير، سرعة، تجميل، مؤقت)
+          // شريط الأدوات الجانبي (تغيير العدسة، السرعة، التجميل، المؤقت)
           Positioned(
             top: 60, left: 20,
             child: Column(
@@ -260,7 +259,7 @@ class _TikTokCameraScreenState extends State<TikTokCameraScreen> {
             ),
           ),
 
-          // شريط إضافة صوت العلوي المطابق للتيك توك
+          // شريط إضافة صوت العلوي (تيك توك)
           Positioned(
             top: 60, right: 80, left: 80,
             child: Center(
@@ -273,7 +272,7 @@ class _TikTokCameraScreenState extends State<TikTokCameraScreen> {
           ),
           Positioned(top: 60, right: 20, child: IconButton(icon: const Icon(Icons.close, size: 26), onPressed: () => setState(() => _cameraStatus = "تم إلغاء العملية"))),
 
-          // شريط المدد الزمنية السفلي التفاعلي
+          // شريط المدد الزمنية السفلي التفاعلي (15ث، 60ث، 3د)
           Positioned(
             bottom: 140, left: 0, right: 0,
             child: Row(
@@ -289,7 +288,7 @@ class _TikTokCameraScreenState extends State<TikTokCameraScreen> {
             ),
           ),
 
-          // زر التسجيل والألبوم والمؤثرات في الأسفل الشغال بالكامل
+          // زر التسجيل والألبوم والمؤثرات السفلي
           Positioned(
             bottom: 40, left: 30, right: 30,
             child: Row(
@@ -316,5 +315,3 @@ class _TikTokCameraScreenState extends State<TikTokCameraScreen> {
   Widget _camSideBtn(IconData i, String l, VoidCallback t) => Padding(padding: const EdgeInsets.only(bottom: 15), child: InkWell(onTap: t, child: Column(children: [Icon(i, size: 22, color: Colors.white), const SizedBox(height: 3), Text(l, style: const TextStyle(fontSize: 9, color: Colors.white70))])));
   Widget _camBottomOption(String l, IconData i, VoidCallback t) => InkWell(onTap: t, child: Column(children: [Icon(i, size: 28, color: Colors.white), const SizedBox(height: 5), Text(l, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold))]));
 }
-
-extension ColorSync on Color { Color syncWith(Color c) => c == Colors.transparent ? this : c; }
