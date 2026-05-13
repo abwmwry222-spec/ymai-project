@@ -10,12 +10,9 @@ jobs:
           channel: 'stable'
       - name: Recreate Android and Build
         run: |
-          # حذف مجلد أندرويد القديم التالف نهائياً
           rm -rf android
-          # إجبار فلاتر على إنشاء مجلد أندرويد حديث ومتوافق
           flutter create . --platforms android --project-name=ultra_kz_pro
           flutter pub get
-          # بناء الـ APK المستقر والنهائي
           flutter build apk --release --no-tree-shake-icons
       - uses: actions/upload-artifact@v4
         with:
