@@ -1,18 +1,27 @@
-name: Stable Production Build
+name: Ultimate Gradle Fix and Build
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Build Standard APK
+          
+      - name: Auto Repair Android Project and Build
         run: |
+          # إصلاح وتحديث ملفات أندرويد والـ Gradle الداخلية لتتوافق مع إصدار فلاتر الحديث
+          flutter create . --platforms android --overwrite
+          
+          # جلب الإعدادات المستقرة
           flutter pub get
+          
+          # البناء النظيف للـ APK النهائي
           flutter build apk --release --no-tree-shake-icons
+          
       - uses: actions/upload-artifact@v4
         with:
-          name: KZ-Ultimate-Suite
+          name: KZ-Supreme-Camera-Final
           path: build/app/outputs/flutter-apk/app-release.apk
