@@ -1,4 +1,4 @@
-name: Super Fix Build
+name: Fixed Action Build
 on: [push]
 jobs:
   build:
@@ -8,19 +8,11 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Force Recreate and Build
-        run: |
-          # حذف الملفات المعطلة نهائياً
-          rm -rf android pubspec.lock
-          # إعادة إنشاء المشروع من الصفر كما طلبت الرسالة في الصورة
-          flutter create . --platforms android --project-name=ultra_kz_pro
+      - run: |
           flutter pub get
-          # بناء الـ APK النهائي
+          flutter clean
           flutter build apk --release --no-tree-shake-icons
-      
-      - name: Upload Master APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: KZ-Supreme-Final
           path: build/app/outputs/flutter-apk/app-release.apk
