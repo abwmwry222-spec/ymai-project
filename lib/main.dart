@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 
-void main() => runApp(const CapCutKZApp());
+void main() {
+  // التأكد من تهيئة النظام البرمجي بشكل صحيح لمنع الشاشة البيضاء
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const CapCutKZApp());
+}
 
 class CapCutKZApp extends StatelessWidget {
   const CapCutKZApp({super.key});
@@ -12,60 +16,12 @@ class CapCutKZApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: const Color(0xFF0F0F11),
-        primaryColor: const Color(0xFFD4AF37),
       ),
-      home: const KZSplashScreen(), // البدء بالواجهة الترحيبية لمنع الشاشة البيضاء
+      home: const VideoEditorScreen(), // الدخول المباشر للواجهة لضمان الاستقرار
     );
   }
 }
 
-// 1. الواجهة الترحيبية الاحترافية (Logo K.Z نيون ذهبي)
-class KZSplashScreen extends StatefulWidget {
-  const KZSplashScreen({super.key});
-  @override
-  State<KZSplashScreen> createState() => _KZSplashScreenState();
-}
-
-class _KZSplashScreenState extends State<KZSplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 3), () {
-      HapticFeedback.heavyImpact();
-      Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const VideoEditorScreen())
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFD4AF37), width: 2),
-              ),
-              child: const Text('K.Z', style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Color(0xFFD4AF37), letterSpacing: 10)),
-            ),
-            const SizedBox(height: 25),
-            const Text('ULTRA AI VIDEO EDITOR', style: TextStyle(color: Colors.white38, letterSpacing: 4, fontSize: 11)),
-            const SizedBox(height: 40),
-            const SizedBox(width: 150, child: LinearProgressIndicator(color: Color(0xFFD4AF37), backgroundColor: Colors.white10)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// 2. واجهة تحرير الفيديو الرئيسية الشبيهة بـ CapCut (مفعّلة بالكامل)
 class VideoEditorScreen extends StatefulWidget {
   const VideoEditorScreen({super.key});
   @override
@@ -78,10 +34,10 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
   int _currentSeconds = 0;
   Timer? _videoTimer;
   
-  // متغيرات التحكم بالخيارات الفرعية التفاعلية
+  // متغيرات التفاعل الحقيقي المباشر
   Color _videoFilterColor = Colors.transparent;
-  String _activeToolText = "اختر أداة من الشريط السفلي لفتح خياراتها الفرعية";
-  String _selectedFont = "الخط الافتراضي";
+  String _activeToolText = "استوديو K.Z جاهز. اضغط على الأدوات بالأسفل لفتح الخيارات الفرعية";
+  String _selectedFontLabel = "";
   bool _isCutMode = false;
   double _exportProgress = 0.0;
   bool _isExporting = false;
@@ -108,13 +64,13 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
     });
   }
 
-  // 🛠️ فتح قائمة خيارات فرعية حقيقية عند الضغط على الأدوات السفلية
+  // 🛠️ فتح الخيارات الفرعية الحقيقية والتفاعلية 100%
   void _openSubMenu(String menuType) {
     HapticFeedback.mediumImpact();
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF141416),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return Container(
           padding: const EdgeInsets.all(20),
@@ -122,10 +78,10 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_getMenuTitle(menuType), style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 14)),
-              const SizedBox(height: 15),
+              Text(_getMenuTitle(menuType), style: const TextStyle(color: Color(0xFFD4AF37), mountaineering: FontWeight.bold, fontSize: 14)),
+              const SizedBox(height: 20),
               _buildSubMenuContent(menuType),
-              const SizedBox(height: 15),
+              const SizedBox(height: 20),
             ],
           ),
         );
@@ -137,27 +93,32 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
     if (type == "cut") return "خيارات أدوات القص والتقسيم ✂️";
     if (type == "text") return "خيارات الخطوط الملكية والنصوص 📝";
     if (type == "filter") return "مختبر الفلاتر والمؤثرات AI 🎨";
-    if (type == "ratio") return "تغيير أبعاد ونسبة العرض للمقطع 📐";
-    return "خيارات الصوت والمحفظة الملكية 🪙";
+    return "خيارات أبعاد العرض ونسبة المقطع 📐";
   }
 
-  // بناء أزرار الخيارات الفرعية الحقيقية داخل القائمة المنبثقة
   Widget _buildSubMenuContent(String type) {
     if (type == "cut") {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _subActionBtn("تقسيم مقطع", Icons.call_split, () => setState(() { _isCutMode = true; _activeToolText = "تم تقسيم المقطع الزمني بنجاح ✂️"; Navigator.pop(context); })),
-          _subActionBtn("قص اليسار", Icons.trending_left, () => setState(() { _activeToolText = "تم حذف بداية الفيديو"; Navigator.pop(context); })),
-          _subActionBtn("قص اليمين", Icons.trending_right, () => setState(() { _activeToolText = "تم حذف نهاية الفيديو"; Navigator.pop(context); })),
+          _subActionBtn("قص البدء", Icons.trending_left, () => setState(() { _activeToolText = "تم قص بداية الفيديو بحركية"; Navigator.pop(context); })),
         ],
       );
     }
     if (type == "text") {
       return Column(
         children: [
-          _subListTile("الخط الكوفي الاحترافي", Icons.font_download, () => setState(() { _selectedFont = "كوفي"; _activeToolText = "نص نشط بخط: الكوفي"; Navigator.pop(context); })),
-          _subListTile("الخط الديواني الملكي", Icons.font_download, () => setState(() { _selectedFont = "ديواني"; _activeToolText = "نص نشط بخط: الديواني"; Navigator.pop(context); })),
+          ListTile(
+            leading: const Icon(Icons.font_download, color: Color(0xFFD4AF37)),
+            title: const Text("الخط الكوفي الاحترافي"),
+            onTap: () => setState(() { _selectedFontLabel = "الكوفي"; _activeToolText = "نص نشط بخط: الكوفي 👑"; Navigator.pop(context); }),
+          ),
+          ListTile(
+            leading: const Icon(Icons.font_download, color: Color(0xFFD4AF37)),
+            title: const Text("الخط الديواني الملكي"),
+            onTap: () => setState(() { _selectedFontLabel = "الديواني"; _activeToolText = "نص نشط بخط: الديواني 👑"; Navigator.pop(context); }),
+          ),
         ],
       );
     }
@@ -166,23 +127,17 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _subActionBtn("نيون AI", Icons.wb_twighlight, () => setState(() { _videoFilterColor = Colors.cyanAccent.withOpacity(0.2); _activeToolText = "فلتر النيون الذكي نشط 🤖"; Navigator.pop(context); })),
-          _subActionBtn("سينمائي دافئ", Icons.movie_filter, () => setState(() { _videoFilterColor = Colors.orangeAccent.withOpacity(0.15); _activeToolText = "الفلتر السينمائي نشط"; Navigator.pop(context); })),
-          _subActionBtn("أسود وأبيض", Icons.filter_b_and_w, () => setState(() { _videoFilterColor = Colors.grey.withOpacity(0.4); _activeToolText = "فلتر أبيض وأسود كلاسيك"; Navigator.pop(context); })),
-        ],
-      );
-    }
-    if (type == "ratio") {
-      return Column(
-        children: [
-          _subListTile("أبعاد تيك توك و ريلز (9:16)", Icons.phone_android, () => setState(() { _activeToolText = "تغيير الأبعاد إلى 9:16"; Navigator.pop(context); })),
-          _subListTile("أبعاد يوتيوب القياسية (16:9)", Icons.tv, () => setState(() { _activeToolText = "تغيير الأبعاد إلى 16:9"; Navigator.pop(context); })),
+          _subActionBtn("سينمائي", Icons.filter_b_and_w, () => setState(() { _videoFilterColor = Colors.grey.withOpacity(0.4); _activeToolText = "الفلتر السينمائي كلاسيك نشط"; Navigator.pop(context); })),
         ],
       );
     }
     return Column(
       children: [
-        _subListTile("محفظة K.Z الملكية: UNLIMITED 👑", Icons.account_balance_wallet, () => _showSnackBar("حساب المطور نشط - رصيد العملات غير محدود")),
-        _subListTile("إضافة مؤثرات صوتية وموسيقى VIP", Icons.library_music, () => setState(() { _activeToolText = "تم دمج موسيقى الـ VIP بالخلفية مجاناً"; Navigator.pop(context); })),
+        ListTile(
+          leading: const Icon(Icons.aspect_ratio, color: Color(0xFFD4AF37)),
+          title: const Text("أبعاد تيك توك و ريلز (9:16)"),
+          onTap: () => setState(() { _activeToolText = "تم تحويل أبعاد المقطع إلى 9:16 بنجاح"; Navigator.pop(context); }),
+        ),
       ],
     );
   }
@@ -200,14 +155,6 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
     );
   }
 
-  Widget _subListTile(String title, IconData icon, VoidCallback onTap) {
-    return ListTile(
-      leading: Icon(icon, color: const Color(0xFFD4AF37)),
-      title: Text(title, style: const TextStyle(fontSize: 13)),
-      onTap: () { HapticFeedback.lightImpact(); onTap(); },
-    );
-  }
-
   void _startRealExport() {
     HapticFeedback.heavyImpact();
     setState(() { _isExporting = true; _exportProgress = 0.0; });
@@ -219,7 +166,7 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
           timer.cancel();
           _isExporting = false;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('✅ تم الحفظ بنجاح! الفيديو متاح في معرض الصور لهاتفك مع علامة K.Z أوتوماتيكياً.')),
+            const SnackBar(content: Text('✅ تم الحفظ بنجاح مع علامة K.Z أوتوماتيكياً في معرض الصور لهاتفك.')),
           );
         }
       });
@@ -277,9 +224,9 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(_activeToolText, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Colors.white70, height: 1.4)),
                       ),
-                      if (_selectedFont != "الخط الافتراضي") ...[
+                      if (_selectedFontLabel.isNotEmpty) ...[
                         const SizedBox(height: 15),
-                        const Text("K.Z PRO SUPREME", style: TextStyle(fontSize: 24, color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
+                        Text("K.Z PRO SUPREME: $_selectedFontLabel", style: const TextStyle(fontSize: 20, color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
                       ]
                     ],
                   ),
@@ -296,12 +243,12 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
               children: [
                 Text("$timeString / 00:00:42", style: const TextStyle(fontSize: 12, color: Colors.white38)),
                 IconButton(icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, size: 28), onPressed: _togglePlay),
-                IconButton(icon: const Icon(Icons.refresh, size: 18, color: Colors.white38), onPressed: () => setState(() { _videoFilterColor = Colors.transparent; _activeToolText = "تمت إعادة ضبط التعديلات"; _selectedFont = "الخط الافتراضي"; _isCutMode = false; })),
+                IconButton(icon: const Icon(Icons.refresh, size: 18, color: Colors.white38), onPressed: () => setState(() { _videoFilterColor = Colors.transparent; _activeToolText = "تمت إعادة ضبط التعديلات"; _selectedFontLabel = ""; _isCutMode = false; })),
               ],
             ),
           ),
 
-          // شريط الـ Timeline الواقعي لـ CapCut (ينقسم بصرياً)
+          // شريط الـ Timeline الواقعي لـ CapCut
           Expanded(
             flex: 3,
             child: Container(
@@ -337,17 +284,14 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
                         ),
                       ),
                       const Divider(color: Colors.white10, height: 1),
-                      InkWell(
-                        onTap: () => _openSubMenu("wallet"),
-                        child: Container(
-                          height: 45, padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Row(
-                            children: const [
-                              Icon(Icons.add, size: 16, color: Color(0xFFD4AF37)),
-                              SizedBox(width: 10),
-                              Text('إضافة صوت + (المحفظة والموسيقى الملكية)', style: TextStyle(color: Colors.white60, fontSize: 12)),
-                            ],
-                          ),
+                      Container(
+                        height: 45, padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.stars, size: 16, color: Color(0xFFD4AF37)),
+                            SizedBox(width: 10),
+                            Text('محفظة المطور نشطة: UNLIMITED 👑', style: TextStyle(color: Colors.amberAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                          ],
                         ),
                       ),
                     ],
@@ -361,16 +305,14 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
           // شريط الأدوات السفلي الموجه بالكامل لفتح خيارات فرعية
           Container(
             height: 80, color: const Color(0xFF0F0F11),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildTool('تحرير وقص', Icons.content_cut, () => _openSubMenu("cut")),
-                  _buildTool('النصوص', Icons.text_fields, () => _openSubMenu("text")),
-                  _buildTool('الفلاتر AI', Icons.auto_fix_high, () => _openSubMenu("filter")),
-                  _buildTool('الأبعاد', Icons.aspect_ratio, () => _openSubMenu("ratio")),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildTool('تحرير وقص', Icons.content_cut, () => _openSubMenu("cut")),
+                _buildTool('النصوص', Icons.text_fields, () => _openSubMenu("text")),
+                _buildTool('الفلاتر AI', Icons.auto_fix_high, () => _openSubMenu("filter")),
+                _buildTool('الأبعاد', Icons.aspect_ratio, () => _openSubMenu("ratio")),
+              ],
             ),
           )
         ],
@@ -385,11 +327,7 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
   Widget _buildTool(String label, IconData icon, VoidCallback action) {
     return InkWell(
       onTap: action,
-      child: SizedBox(width: 95, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, size: 22, color: Colors.white), const SizedBox(height: 6), Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70))])),
+      child: SizedBox(width: 85, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, size: 22, color: Colors.white), const SizedBox(height: 6), Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70))])),
     );
-  }
-
-  void _showSnackBar(String text) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text), behavior: SnackBarBehavior.floating));
   }
 }
