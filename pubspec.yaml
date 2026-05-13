@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # مكتبة حقيقية لفتح استوديو الهاتف واختيار الفيديوهات والصور
+  file_picker: ^6.1.1 
 
 dev_dependencies:
   flutter_test:
