@@ -1,56 +1,93 @@
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
+// استدعاء الملفات التي أنشأتها لربطها بالواجهة
+import 'gallery_handler.dart';
+import 'vip_store_handler.dart';
 
-class GalleryHandler {
-  // إنشاء نسخة من ImagePicker للتعامل مع المعرض
-  final ImagePicker _picker = ImagePicker();
+void main() {
+  runApp(const MyApp());
+}
 
-  /// دالة لاختيار فيديو واحد من المعرض لبدء المونتاج
-  Future<File?> pickVideoFromGallery() async {
-    try {
-      // طلب اختيار فيديو بجودة عالية
-      final XFile? pickedFile = await _picker.pickVideo(
-        source: ImageSource.gallery,
-        maxDuration: const Duration(minutes: 10), // تحديد حد أقصى اختياري لطول الفيديو
-      );
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-      if (pickedFile != null) {
-        // تحويل الملف المسترجع إلى ملف كائن (File) يمكن للتطبيق معالجته
-        return File(pickedFile.path);
-      }
-      return null; // في حال ألغى المستخدم الاختيار
-    } catch (e) {
-      print("خطأ أثناء اختيار الفيديو: $e");
-      return null;
-    }
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'YMAI Video Editor',
+      theme: ThemeData.dark(), // ثيم داكن يناسب تطبيقات المونتاج الاحترافية
+      home: const HomeScreen(),
+    );
   }
+}
 
-  /// دالة لاختيار صورة واحدة (مثلاً لتصميم غلاف أو دمجها في الفيديو)
-  Future<File?> pickImageFromGallery() async {
-    try {
-      final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        return File(pickedFile.path);
-      }
-      return null;
-    } catch (e) {
-      print("خطأ أثناء اختيار الصورة: $e");
-      return null;
-    }
-  }
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-  /// دالة لاختيار عدة صور أو فيديوهات معاً (مفيدة لدمج مقاطع متعددة)
-  Future<List<File>> pickMultipleMedia() async {
-    List<File> mediaFiles = [];
-    try {
-      final List<XFile> pickedFiles = await _picker.pickMultiImage();
-      for (var file in pickedFiles) {
-        mediaFiles.add(File(file.path));
-      }
-      return mediaFiles;
-    } catch (e) {
-      print("خطأ أثناء اختيار ملفات متعددة: $e");
-      return mediaFiles;
-    }
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  // إنهاء كائنات المعالج للاستخدام في الواجهة
+  final GalleryHandler _galleryHandler = GalleryHandler();
+  final VipStoreHandler _vipStoreHandler = VipStoreHandler();
+
+  String _statusMessage = "مرحباً بك في تطبيق المونتاج! اختر فيديو للبدء.";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('YMAI Pro Editor'),
+        actions: [
+          // أيقونة مميزة تدل على حالة الـ VIP
+          IconButton(
+            icon: Icon(
+              Icons.star,
+              color: _vipStoreHandler.isVip ? Colors.amber : Colors.grey,
+            ),
+            onPressed: () {
+              setState(() {
+                _vipStoreHandler.activateVipStatus();
+                _statusMessage = "تم تفعيل الـ VIP! تم فتح جميع ميزات التصدير بدقة 4K.";
+              });
+            },
+          )
+        ],
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _statusMessage,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 40),
+              
+              // زر اختيار الفيديو من الاستوديو
+              ElevatedButton.icon(
+                icon: const Icon(Icons.video_library),
+                label: const Text('اختيار فيديو للمونتاج'),
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
+                onPressed: () async {
+                  final videoFile = await _galleryHandler.pickVideoFromGallery();
+                  setState(() {
+                    if (videoFile != null) {
+                      _statusMessage = "تم تحميل الفيديو بنجاح:\n${videoFile.path.split('/').last}";
+                    } else {
+                      _statusMessage = "لم يتم اختيار أي فيديو.";
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
