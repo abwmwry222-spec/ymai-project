@@ -1,31 +1,39 @@
-import 'package:flutter/material.dart';
+class VipStoreHandler {
+  // متغير منطقي لحفظ حالة المستخدم الحالية (VIP أم لا)
+  bool _isUserVip = false;
 
-class KZVIPTemplate {
-  final String id;
-  final String title;
-  final String category;
-  final String duration;
-  final IconData icon;
+  // دالة لاسترجاع حالة المستخدم الحالية
+  bool get isVip => _isUserVip;
 
-  KZVIPTemplate({
-    required this.id,
-    required this.title,
-    required this.category,
-    required this.duration,
-    required this.icon,
-  });
-}
+  /// دالة للتحقق من حالة الاشتراك عند فتح التطبيق (مثلاً عبر فحص قاعدة البيانات المحلية أو السحابة)
+  Future<void> checkSubscriptionStatus() async {
+    // هنا مستقبلاً سنربطها مع مكتبة in_app_purchase أو سيرفر التطبيق
+    // حالياً سنفترض أنه مستخدم عادي
+    _isUserVip = false; 
+  }
 
-class KZVIPStoreHandler {
-  // مكتبة القوالب والتأثيرات الحية الضخمة والحقيقية للتطبيق
-  static List<KZVIPTemplate> getVIPStoreContent() {
-    return [
-      KZVIPTemplate(id: "1", title: "قالب تريند تيك توك: الانتقال السريع ⚡", category: "تيك توك", duration: "15", icon: Icons.bolt),
-      KZVIPTemplate(id: "2", title: "تأثير النيون المتوهج ثلاثي الأبعاد AI 🔮", category: "تأثيرات Visual", duration: "42", icon: Icons.psychology),
-      KZVIPTemplate(id: "3", title: "مقدمة سينمائية 4K: الشعار الذهبي المتوهج ✨", category: "Intros", duration: "08", icon: Icons.movie_filter),
-      KZVIPTemplate(id: "4", title: "قالب ريلز إنستغرام: المونتاج السلو-موشن ⏱️", category: "إنستغرام", duration: "30", icon: Icons.slow_motion_video),
-      KZVIPTemplate(id: "5", title: "تأثير زلزال الكاميرا (Camera Shake Trendy) 🎬", category: "تأثيرات Visual", duration: "25", icon: Icons.vibration),
-      KZVIPTemplate(id: "6", title: "مقدمة لوجو احترافية: دخان سينمائي نيون 💨", category: "Intros", duration: "05", icon: Icons.cloud),
+  /// دالة تُستخدم كجدار حماية للميزات المتقدمة (Feature Gate)
+  /// نمرر لها الميزة، وتخبرنا هل يُسمح للمستخدم باستخدامها أم لا
+  bool hasAccessToFeature(String featureName) {
+    // قائمة بالميزات المخصصة فقط للـ VIP
+    List<String> vipExclusiveFeatures = [
+      'export_4k',        // التصدير بدقة 4K
+      'remove_watermark', // إزالة العلامة المائية
+      'vip_effects'       // الفلاتر والتأثيرات الاحترافية
     ];
+
+    // إذا كانت الميزة حصرية والمستخدم ليس VIP، يتم رفض الوصول
+    if (vipExclusiveFeatures.contains(featureName) && !_isUserVip) {
+      return false; 
+    }
+    
+    // خلاف ذلك، الميزة متاحة للجميع
+    return true;
+  }
+
+  /// دالة لتنفيذ عملية شراء اشتراك VIP ناجحة
+  void activateVipStatus() {
+    _isUserVip = true;
+    print("تهانينا! تم تفعيل حساب VIP بنجاح.");
   }
 }
