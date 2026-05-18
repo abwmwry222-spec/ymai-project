@@ -1,19 +1,13 @@
-name: ultra_kz_pro
-description: "A new Flutter project."
-publish_to: 'none'
-version: 1.0.0+1
-
-environment:
-  sdk: '>=3.0.0 <4.0.0'
-
 dependencies:
   flutter:
     sdk: flutter
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^3.0.0
+  # مكتبة اختيار الصور والفيديوهات من المعرض
+  image_picker: ^1.1.2 
+  
+  # مكتبة اختيار ملفات متعددة ومتقدمة من الجهاز (بديل قوي)
+  file_picker: ^8.0.3
 
-flutter:
-  uses-material-design: true
+  # مكتبة إدارة الاشتراكات والمشتريات داخل التطبيق
+  in_app_purchase: ^3.2.0
+  
