@@ -3,20 +3,20 @@ class VipStoreHandler {
 
   bool get isVip => _isUserVip;
 
-  /// التحقق من الصلاحيات للميزات المتقدمة
+  /// فحص صلاحيات الوصول للميزات المتقدمة
   bool hasAccessToFeature(String featureName) {
     List<String> vipExclusiveFeatures = [
-      'export_4k',        // دقة 4K حصرية للـ VIP
-      'remove_watermark', // إزالة العلامة المائية حصرية للـ VIP
+      'export_4k',        // جودة 4K حصرية
+      'remove_watermark', // إزالة الشعار حصري
     ];
 
     if (vipExclusiveFeatures.contains(featureName) && !_isUserVip) {
-      return false; // ليس لديه صلاحية
+      return false; 
     }
-    return true; // متاح
+    return true; 
   }
 
-  /// تفعيل أو إلغاء تفعيل الـ VIP برمجياً لتجربة الزر
+  /// تفعيل أو إلغاء الـ VIP
   void toggleVipStatus() {
     _isUserVip = !_isUserVip;
   }
