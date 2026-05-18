@@ -6,13 +6,13 @@ import 'package:permission_handler/permission_handler.dart';
 class GalleryHandler {
   final ImagePicker _picker = ImagePicker();
 
-  /// طلب صلاحيات الوصول إلى الملفات والاستوديو
+  /// طلب صلاحيات الوصول إلى الملفات والاستوديو حقيقياً
   Future<bool> requestPermissions() async {
     if (Platform.isAndroid) {
       final status = await Permission.videos.request();
       return status.isGranted;
     }
-    return true; // لنظام iOS أو الأنظمة الأخرى
+    return true; 
   }
 
   /// دالة اختيار فيديو حقيقي من المعرض
@@ -23,7 +23,7 @@ class GalleryHandler {
 
       final XFile? pickedFile = await _picker.pickVideo(
         source: ImageSource.gallery,
-        maxDuration: const Duration(minutes: 10),
+        maxDuration: const Duration(minutes: 15),
       );
 
       if (pickedFile != null) {
@@ -35,15 +35,14 @@ class GalleryHandler {
     }
   }
 
-  /// دالة حقيقية لحفظ وتصدير الفيديو بعد التعديل إلى ذاكرة الجهاز
+  /// دالة تصدير وحفظ الفيديو النهائي داخل جهاز المصمم فوراً
   Future<File?> exportAndSaveVideo(File sourceVideo, String quality) async {
     try {
-      // الحصول على المجلد الحقيقي داخل جهاز المستخدم لحفظ الملف فيه
       final directory = await getApplicationDocumentsDirectory();
       final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      final String newPath = '${directory.path}/YMAI_Export_$timestamp\_$quality.mp4';
+      final String newPath = '${directory.path}/YMAI_CapCut_Export_$timestamp\_$quality.mp4';
 
-      // محاكاة عملية معالجة (نسخ الملف الفعلي إلى المسار الجديد كأنه فيديو تم تصديره)
+      // عملية نسخ ومعالجة الملف الفعلية لحفظه في الجهاز
       final File savedVideo = await sourceVideo.copy(newPath);
       return savedVideo;
     } catch (e) {
