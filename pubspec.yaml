@@ -1,13 +1,24 @@
+name: ymai_proj
+description: "A professional video and photo editing application."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # تأكد أن هذا متوافق مع إصدار فلاتر لديك
+
 dependencies:
   flutter:
     sdk: flutter
 
-  # مكتبة اختيار الصور والفيديوهات من المعرض
-  image_picker: ^1.1.2 
-  
-  # مكتبة اختيار ملفات متعددة ومتقدمة من الجهاز (بديل قوي)
+  # استخدمنا علامة ^ لتجعل فلاتر يختار الإصدار المستقر المتوافق تلقائياً
+  image_picker: ^1.1.2
   file_picker: ^8.0.3
-
-  # مكتبة إدارة الاشتراكات والمشتريات داخل التطبيق
   in_app_purchase: ^3.2.0
-  
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
