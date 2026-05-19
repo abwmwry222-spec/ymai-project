@@ -26,11 +26,10 @@ jobs:
 
     - name: Inject Missing Android Folder
       run: |
-        flutter create --platforms=android .
+        flutter create --project-name=ymai_project --platforms=android .
         
     - name: Fix Android SDK Versions
       run: |
-        # هذا السطر يقوم بتعديل ملف الإعدادات تلقائياً داخل السيرفر إلى الإصدارات المطلوبة
         sed -i 's/minSdkVersion.*/minSdkVersion 24/g' android/app/build.gradle
         sed -i 's/targetSdkVersion.*/targetSdkVersion 34/g' android/app/build.gradle
 
