@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'YMAI CapCut Style Pro',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF000000), // خلفية سوداء مثل CapCut
+        scaffoldBackgroundColor: const Color(0xFF121212),
         primaryColor: Colors.white,
       ),
       home: const CapCutEditorScreen(),
@@ -41,7 +41,7 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
   bool _removeWatermark = false;
   bool _isExporting = false;
   bool _isPlaying = false;
-  double _currentTime = 0.0; // لمراقبة مؤشر وقت الفيديو حقيقياً
+  double _currentTime = 0.0; 
   String? _exportedPath;
 
   @override
@@ -51,15 +51,14 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF111111),
         elevation: 0,
-        title: Row(
+        title: const Row(
           children: [
-            const Icon(Icons.video_settings, color: Colors.blueAccent),
-            const SizedBox(width: 8),
-            const Text("YMAI Pro Editor", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Icon(Icons.video_settings, color: Colors.blueAccent),
+            SizedBox(width: 8),
+            Text("YMAI Pro Editor", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
-          // زر ترقية VIP الحقيقي لاختبار الصلاحيات والأزرار المقفلة
           IconButton(
             icon: Icon(Icons.workspace_premium, color: _vipStore.isVip ? Colors.amber : Colors.grey),
             onPressed: () {
@@ -69,7 +68,6 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
               _showToast(context, _vipStore.isVip ? "تم الترقية إلى حساب VIP حقيقي!" : "تمت العودة للحساب المجاني");
             },
           ),
-          // زر التصدير العلوي السريع مثل كاب كات
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: ElevatedButton(
@@ -87,7 +85,6 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
       ),
       body: Column(
         children: [
-          // 1. منطقة المعاينة وعرض الفيديو (Preview Screen)
           Expanded(
             flex: 4,
             child: Container(
@@ -115,9 +112,8 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
                       ],
                     )
                   : Stack(
-                      alignment: Center,
+                      alignment: Alignment.center,
                       children: [
-                        // شاشة محاكاة الفلتر البصري الحقيقي للفيديو
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -141,8 +137,6 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
                     ),
             ),
           ),
-
-          // 2. شريط أدوات التحكم والوقت (Playback Controls)
           if (_selectedVideo != null) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -164,8 +158,6 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
                 ],
               ),
             ),
-
-            // 3. قلب تطبيق كاب كات: الخط الزمني الحقيقي (Timeline Track)
             Expanded(
               flex: 2,
               child: Container(
@@ -173,7 +165,6 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // شريط التمرير والمصغرات للفيديو
                     ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: 15,
@@ -189,14 +180,11 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
                         );
                       },
                     ),
-                    // الخط الأحمر العمودي الذي يحدد نقطة القطع (Playhead Column)
                     Container(width: 2, color: Colors.redAccent, height: double.infinity),
                   ],
                 ),
               ),
             ),
-
-            // 4. لوحة خيارات وتعديل إعدادات التصدير والجودة
             Container(
               color: const Color(0xFF0F0F0F),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -221,8 +209,6 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
                 ],
               ),
             ),
-
-            // 5. شريط أدوات كاب كات السفلي بالترتيب المألوف (CapCut Bottom Navigation)
             Container(
               padding: const EdgeInsets.symmetric(vertical: 12),
               color: const Color(0xFF111111),
@@ -230,7 +216,7 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildCapCutTool(Icons.content_cut, "تحرير وقص", () {
-                    _showActionFeedback(context, "تم قسيم وشطر الفيديو عند المؤشر الأحمر حقيقياً!");
+                    _showActionFeedback(context, "تم تقسيم وشطر الفيديو عند المؤشر الأحمر حقيقياً!");
                   }),
                   _buildCapCutTool(Icons.color_lens, "الفلاتر", _openFiltersMenu),
                   _buildCapCutTool(_removeWatermark ? Icons.check_circle : Icons.radio_button_unchecked, "إزالة الشعار", _toggleWatermark),
@@ -318,10 +304,7 @@ class _CapCutEditorScreenState extends State<CapCutEditorScreen> {
 
   Future<void> _exportVideoWorkflow() async {
     setState(() => _isExporting = true);
-    
-    // محاكاة زمن الرندرة والمعالجة للمونتاج بدقة عالية
     await Future.delayed(const Duration(seconds: 4));
-
     final result = await _gallery.exportAndSaveVideo(_selectedVideo!, _selectedResolution);
 
     setState(() {
