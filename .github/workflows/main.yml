@@ -1,30 +1,41 @@
-name: Absolute Fix and Target Build
-on: [push]
+name: Auto Create Android and Build APK
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          
-      - name: Hard Overwrite and Inject Code
-        run: |
-          # 1. تنظيف ومسح مجلد أندرويد القديم المسبب للتعارض والرفض
-          rm -rf android pubspec.lock
-          
-          # 2. إعادة إنشاء هيكل أندرويد حديث ونظيف متوافق مع خوادم جوجل
-          flutter create . --platforms android --project-name=ultra_kz_pro
-          
-          # 3. التأكد من تنزيل المكتبات والاعتمادية السليمة لـ Material Design
-          flutter pub get
-          
-          # 4. بناء نسخة الـ APK الحقيقية وتجميع الأكواد من ملف main.dart مباشرة
-          flutter build apk --release --no-tree-shake-icons
-          
-      - uses: actions/upload-artifact@v4
-        with:
-          name: KZ-Supreme-Real-Studio
-          path: build/app/outputs/flutter-apk/app-release.apk
+    - uses: actions/checkout@v4
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+
+    - name: Inject Missing Android Folder
+      run: |
+        flutter create --platforms=android .
+        
+    - name: Fix Android SDK Versions
+      run: |
+        # هذا السطر يقوم بتعديل ملف الإعدادات تلقائياً داخل السيرفر إلى الإصدارات المطلوبة
+        sed -i 's/minSdkVersion.*/minSdkVersion 24/g' android/app/build.gradle
+        sed -i 's/targetSdkVersion.*/targetSdkVersion 34/g' android/app/build.gradle
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build APK
+      run: flutter build apk --release
