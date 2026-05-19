@@ -1,31 +1,26 @@
-name: Flutter Web and Code Check
+name: ymai_project
+description: "A professional CapCut-like video and photo editing application."
+publish_to: 'none'
+version: 1.0.0+1
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+environment:
+  sdk: '>=3.3.0 <4.0.0' # هذا السطر المحدَّد هو ما يطلبه السيرفر تماماً ليعبر الفحص
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+dependencies:
+  flutter:
+    sdk: flutter
 
-    steps:
-    - uses: actions/checkout@v4
+  image_picker: ^1.1.2
+  file_picker: ^8.0.3
+  in_app_purchase: ^3.2.0
+  path_provider: ^2.1.3      
+  permission_handler: ^11.3.1 
+  cupertino_icons: ^1.0.6    
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '17'
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.19.0' # إصدار ثابت ومتوافق جداً مع مشروعك
-
-    - name: Install dependencies
-      run: flutter pub get
-
-    - name: Verify Code Compilation
-      run: flutter build web --release # سيقوم بالبناء بصيغة الويب السريعة للتأكد من سلامة كود المونتاج بالكامل
+flutter:
+  uses-material-design: true
