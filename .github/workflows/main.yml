@@ -24,17 +24,56 @@ jobs:
       with:
         flutter-version: '3.19.0'
 
-    - name: Inject Missing Android Folder
+    - name: Inject Complete Android Project
       run: |
+        # إنشاء مشروع أندرويد متكامل ونظيف باسم الحزمة الصحيح
         flutter create --project-name=ymai_project --platforms=android .
         
-    - name: Fix Android SDK Versions
+    - name: Force Custom Gradle Configuration
       run: |
-        sed -i 's/minSdkVersion.*/minSdkVersion 24/g' android/app/build.gradle
-        sed -i 's/targetSdkVersion.*/targetSdkVersion 34/g' android/app/build.gradle
+        # هذا الأمر يقوم باستبدال ملف إعدادات الأندرويد بملف مخصص يحتوي على الإصدارات المطلوبة مباشرة
+        cat << 'EOF' > android/app/build.gradle
+        plugins {
+            id "com.android.application"
+            id "kotlin-android"
+            id "dev.flutter.flutter-gradle-plugin"
+        }
+
+        android {
+            namespace "com.example.ymai_project"
+            compileSdk 34
+
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+
+            kotlinOptions {
+                jvmTarget = '1.8'
+            }
+
+            defaultConfig {
+                applicationId "com.example.ymai_project"
+                minSdkVersion 24
+                targetSdkVersion 34
+                versionCode flutterVersionCode.toInteger()
+                versionName flutterVersionName
+            }
+        }
+
+        flutter {
+            source '../..'
+        }
+        EOF
 
     - name: Install dependencies
       run: flutter pub get
 
     - name: Build APK
       run: flutter build apk --release
+
+    - name: Upload APK Output
+      uses: actions/upload-artifact@v4
+      with:
+        name: ymai-capcut-pro-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
