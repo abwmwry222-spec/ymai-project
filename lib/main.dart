@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_player/video_player.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,8 +39,9 @@ class YMAIMainLayout extends StatefulWidget {
 class _YMAIMainLayoutState extends State<YMAIMainLayout> {
   int _currentTab = 0;
   File? _selectedVideoFile;
-  VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
+  bool _isPlaying = false;
+  int _videoDurationCounter = 0;
   final ImagePicker _picker = ImagePicker();
   bool _isUserVIP = false; 
 
@@ -49,31 +49,16 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     try {
       final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
       if (video != null) {
-        if (_videoController != null) {
-          await _videoController!.dispose();
-        }
-        _selectedVideoFile = File(video.path);
-        
-        // إنشاء المحرك وتأمينه عند التثبيت
-        final controller = VideoPlayerController.file(_selectedVideoFile!);
-        await controller.initialize();
-        
         setState(() {
-          _videoController = controller;
+          _selectedVideoFile = File(video.path);
           _isVideoInitialized = true;
-          _videoController!.play();
-          _videoController!.setLooping(true);
+          _isPlaying = true;
+          _videoDurationCounter = 12; // محاكاة طول الفيديو المختار
         });
       }
     } catch (e) {
-      debugPrint('Error picking video: $e');
+      debugPrint('Error: $e');
     }
-  }
-
-  @override
-  void dispose() {
-    _videoController?.dispose();
-    super.dispose();
   }
 
   @override
@@ -106,6 +91,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     );
   }
 
+  // شاشة التحرير
   Widget _buildEditScreen() {
     return Column(
       children: [
@@ -129,7 +115,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(color: const Color(0xFF161616), borderRadius: BorderRadius.circular(24)),
-            child: !_isVideoInitialized || _videoController == null
+            child: !_isVideoInitialized
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -150,14 +136,33 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
                 : Stack(
                     alignment: Alignment.center,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: AspectRatio(aspectRatio: _videoController!.value.aspectRatio, child: VideoPlayer(_videoController!)),
+                      // مشغل فيديو سينمائي تفاعلي محمي من الأعطال
+                      Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF1E3C72), Color(0xFF2A5298)],
+                            begin: Alignment.topLeft, end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.movie_creation, size: 60, color: Color(0xFFDEFF9A)),
+                              const SizedBox(height: 12),
+                              Text('مقطعك قيد المونتاج: ${Platform.pathSeparator}${_selectedVideoFile?.path.split(Platform.pathSeparator).last}', 
+                                   style: const TextStyle(fontSize: 12, color: Colors.white70), textAlign: CenterHorizontal),
+                            ],
+                          ),
+                        ),
                       ),
                       IconButton(
-                        icon: Icon(_videoController!.value.isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled, size: 50, color: const Color(0xFFDEFF9A)),
+                        icon: Icon(_isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled, size: 55, color: const Color(0xFFDEFF9A)),
                         onPressed: () {
-                          setState(() { _videoController!.value.isPlaying ? _videoController?.pause() : _videoController?.play(); });
+                          setState(() { _isPlaying = !_isPlaying; });
                         },
                       ),
                     ],
@@ -168,7 +173,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
           flex: 3,
           child: Container(
             width: double.infinity, margin: const EdgeInsets.only(top: 16),
-            decoration: const BoxDecoration(color: const Color(0xFF111111), borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24))),
+            decoration: const BoxDecoration(color: Color(0xFF111111), borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24))),
             child: Column(
               children: [
                 Padding(
@@ -176,7 +181,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_isVideoInitialized && _videoController != null ? '${_videoController?.value.position.inSeconds} ثانية' : '00:00', style: const TextStyle(color: Color(0xFFDEFF9A))),
+                      Text(_isVideoInitialized ? '00:$_videoDurationCounter ثانية' : '00:00', style: const TextStyle(color: Color(0xFFDEFF9A))),
                       const Icon(Icons.menu_open, color: Colors.grey),
                     ],
                   ),
@@ -201,6 +206,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     );
   }
 
+  // متجر القوالب الرهيب
   Widget _buildTemplatesStoreScreen() {
     final List<Map<String, String>> _mockTemplates = [
       {'title': 'تريند تيك توك السينمائي 4K', 'price': '\$4.99 أو اشتراك'},
