@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const YMAIApp());
 }
 
@@ -42,23 +43,30 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   final ImagePicker _picker = ImagePicker();
-  bool _isUserVIP = false; // حالة اشتراك المستخدم
+  bool _isUserVIP = false; 
 
   Future<void> _pickVideoFromGallery() async {
-    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      if (_videoController != null) {
-        await _videoController!.dispose();
-      }
-      _selectedVideoFile = File(video.path);
-      _videoController = VideoPlayerController.file(_selectedVideoFile!)
-        ..initialize().then((_) {
-          setState(() {
-            _isVideoInitialized = true;
-            _videoController!.play();
-            _videoController!.setLooping(true);
-          });
+    try {
+      final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+      if (video != null) {
+        if (_videoController != null) {
+          await _videoController!.dispose();
+        }
+        _selectedVideoFile = File(video.path);
+        
+        // إنشاء المحرك وتأمينه عند التثبيت
+        final controller = VideoPlayerController.file(_selectedVideoFile!);
+        await controller.initialize();
+        
+        setState(() {
+          _videoController = controller;
+          _isVideoInitialized = true;
+          _videoController!.play();
+          _videoController!.setLooping(true);
         });
+      }
+    } catch (e) {
+      debugPrint('Error picking video: $e');
     }
   }
 
@@ -72,7 +80,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
   Widget build(BuildContext context) {
     final List<Widget> _screens = [
       _buildEditScreen(),
-      _buildTemplatesStoreScreen(), // المتجر الرهيب الجديد
+      _buildTemplatesStoreScreen(), 
       _buildProfileScreen(),
     ];
 
@@ -98,7 +106,6 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     );
   }
 
-  // 1️⃣ شاشة التحرير والتايم لاين
   Widget _buildEditScreen() {
     return Column(
       children: [
@@ -122,7 +129,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(color: const Color(0xFF161616), borderRadius: BorderRadius.circular(24)),
-            child: !_isVideoInitialized
+            child: !_isVideoInitialized || _videoController == null
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -169,7 +176,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_isVideoInitialized ? '${_videoController?.value.position.inSeconds} ثانية' : '00:00', style: const TextStyle(color: Color(0xFFDEFF9A))),
+                      Text(_isVideoInitialized && _videoController != null ? '${_videoController?.value.position.inSeconds} ثانية' : '00:00', style: const TextStyle(color: Color(0xFFDEFF9A))),
                       const Icon(Icons.menu_open, color: Colors.grey),
                     ],
                   ),
@@ -194,7 +201,6 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     );
   }
 
-  // 2️⃣ شاشة متجر القوالب الرهيبة والمدفوعة مع نظام الاشتراك
   Widget _buildTemplatesStoreScreen() {
     final List<Map<String, String>> _mockTemplates = [
       {'title': 'تريند تيك توك السينمائي 4K', 'price': '\$4.99 أو اشتراك'},
@@ -271,7 +277,6 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     );
   }
 
-  // 3️⃣ شاشة الحساب والشراء
   Widget _buildProfileScreen() {
     return Center(
       child: Column(
@@ -302,7 +307,6 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     );
   }
 
-  // شاشة الدفع والاشتراك المحاكية (Paywall)
   void _openVIPPaywall(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -333,7 +337,6 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
                 onPressed: () {
                   setState(() { _isUserVIP = true; });
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('مبروك! تم تفعيل اشتراك VIP وفتح جميع القوالب والواجهات بنجاح! 🎉')));
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDEFF9A)),
                 child: const Text('تفعيل الاشتراك الفوري', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
@@ -349,7 +352,7 @@ class _YMAIMainLayoutState extends State<YMAIMainLayout> {
     if (!_isUserVIP) {
       _openVIPPaywall(context);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('جاري معالجة وحقن قالب [$templateName] داخل مشروعك الحالي... 🚀')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('جاري معالجة وقص قالب [$templateName] تلقائياً... 🚀')));
     }
   }
 }
