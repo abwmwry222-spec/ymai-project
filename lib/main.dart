@@ -7,7 +7,6 @@ void main() {
 class YMAIApp extends StatelessWidget {
   const YMAIApp({super.key});
 
-  @style
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -46,7 +45,7 @@ class _YMAIHomeScreenState extends State<YMAIHomeScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                justifyContent: spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'YMAI PRO',
