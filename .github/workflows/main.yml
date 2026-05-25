@@ -24,53 +24,19 @@ jobs:
       with:
         flutter-version: '3.19.0'
 
-    - name: Inject Complete Android Project
+    - name: Clean and Create Fresh Project
       run: |
-        # إنشاء مشروع أندرويد متكامل ونظيف باسم الحزمة الصحيح
+        # تنظيف أي مخلفات سابقة وإنشاء مشروع أندرويد قياسي نظيف بالكامل
+        flutter clean
         flutter create --project-name=ymai_project --platforms=android .
-        
-    - name: Force Custom Gradle Configuration
-      run: |
-        # هذا الأمر يقوم باستبدال ملف إعدادات الأندرويد بملف مخصص يحتوي على الإصدارات المطلوبة مباشرة
-        cat << 'EOF' > android/app/build.gradle
-        plugins {
-            id "com.android.application"
-            id "kotlin-android"
-            id "dev.flutter.flutter-gradle-plugin"
-        }
 
-        android {
-            namespace "com.example.ymai_project"
-            compileSdk 34
-
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_1_8
-                targetCompatibility JavaVersion.VERSION_1_8
-            }
-
-            kotlinOptions {
-                jvmTarget = '1.8'
-            }
-
-            defaultConfig {
-                applicationId "com.example.ymai_project"
-                minSdkVersion 24
-                targetSdkVersion 34
-                versionCode flutterVersionCode.toInteger()
-                versionName flutterVersionName
-            }
-        }
-
-        flutter {
-            source '../..'
-        }
-        EOF
-
-    - name: Install dependencies
+    - name: Install Dependencies
       run: flutter pub get
 
-    - name: Build APK
-      run: flutter build apk --release
+    - name: Build Production APK
+      run: |
+        # بناء الـ APK باستخدام وضع التوافق الأقصى لتفادي تعارض الـ Gradle
+        flutter build apk --release --no-pub --target-platform android-arm64
 
     - name: Upload APK Output
       uses: actions/upload-artifact@v4
