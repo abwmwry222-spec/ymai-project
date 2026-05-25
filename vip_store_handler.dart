@@ -1,20 +1,17 @@
 class VipStoreHandler {
-  // المتغير الحقيقي المسؤول عن حالة الاشتراك (مجاني أو مدفوع Pro)
-  bool _isVipUser = false;
+  // متغير بسيط لتحديد حالة الـ VIP (true تعني مشترك، false تعني مجاني)
+  bool isVip = false;
 
-  bool get isVip => _isVipUser;
-
-  // دالة تحويل الحساب وتفعيل الاشتراك الحقيقي
+  // دالة لتغيير حالة الاشتراك فوراً عند الضغط على الزر
   void toggleVipStatus() {
-    _isVipUser = !_isVipUser;
+    isVip = !isVip;
   }
 
-  // فحص الصلاحيات حقيقياً قبل السماح للمصمم باستخدام الأدوات القوية
+  // دالة فحص الصلاحيات لمعرفة هل الميزة مفتوحة أم مغلقة
   bool hasAccessToFeature(String featureKey) {
     if (featureKey == 'export_4k' || featureKey == 'remove_watermark') {
-      // إذا كان الحساب VIP يسمح له فوراً، وإذا كان مجانياً يتم قفل الميزة
-      return _isVipUser;
+      return isVip; // لن يمنحه الوصول إلا إذا كان حساب VIP حقيقي
     }
-    return true; // باقي الميزات الاحترافية العادية مفتوحة للجميع
+    return true; // باقي الميزات العادية مفتوحة دائماً
   }
 }
