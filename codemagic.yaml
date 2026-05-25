@@ -1,1 +1,26 @@
+version: flutter-app
+max_build_duration: 60
 
+workflows:
+  android-release:
+    name: YMAI CapCut Pro APK Build
+    instance_type: mac_mini_m1
+    environment:
+      flutter: 3.19.0
+    triggering:
+      events:
+        - push
+      branches:
+        - main
+    scripts:
+      - name: Create Android Folder
+        script: |
+          flutter create --project-name=ymai_project --platforms=android .
+      - name: Get Flutter Packages
+        script: |
+          flutter pub get
+      - name: Build Android APK
+        script: |
+          flutter build apk --release --no-pub --target-platform android-arm64
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
