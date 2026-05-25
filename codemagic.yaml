@@ -10,8 +10,6 @@ workflows:
     triggering:
       events:
         - push
-      branches:
-        - main
     scripts:
       - name: Create Android Folder
         script: |
