@@ -1,26 +1,22 @@
 name: ymai_project
-description: "A professional CapCut-like video and photo editing application."
+description: "A professional video editor app like CapCut"
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.0 <4.0.0' # هذا السطر المحدَّد هو ما يطلبه السيرفر تماماً ليعبر الفحص
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-
+  cupertino_icons: ^1.0.6
   image_picker: ^1.1.2
-  file_picker: ^8.0.3
-  in_app_purchase: ^3.2.0
-  path_provider: ^2.1.3      
-  permission_handler: ^11.3.1 
-  cupertino_icons: ^1.0.6    
+  video_player: ^2.8.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
