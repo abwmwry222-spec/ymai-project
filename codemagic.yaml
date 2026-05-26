@@ -9,11 +9,22 @@ workflows:
       events:
         - push
     scripts:
-      - name: Recreate Android and Build
+      - name: Fresh Environment Boot and Build
         script: |
-          rm -rf android
-          flutter create . --platforms=android
+          # 1. الخروج للمجلد الرئيسي وإنشاء مشروع جديد ونظيف تماماً لتوليد ملفات أندرويد سليمة
+          cd ..
+          flutter create fresh_ymai_app --platforms=android
+          
+          # 2. نقل كود الواجهة الاحترافي الذي حقنته بيدك إلى المشروع الجديد النظيف
+          cp $CM_BUILD_DIR/lib/main.dart fresh_ymai_app/lib/main.dart
+          
+          # 3. الدخول للمشروع الجديد وبناء الـ APK بأحدث إعدادات Gradle متوافقة
+          cd fresh_ymai_app
           flutter pub get
           flutter build apk --release --no-shrink
+          
+          # 4. نقل ملف الـ APK المستخرج إلى مجلد المخرجات لكي يتمكن كود ماجيك من رفعه لك
+          mkdir -p $CM_BUILD_DIR/build/app/outputs/flutter-apk
+          cp build/app/outputs/flutter-apk/app-release.apk $CM_BUILD_DIR/build/app/outputs/flutter-apk/app-release.apk
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
