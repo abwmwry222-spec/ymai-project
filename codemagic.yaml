@@ -9,21 +9,21 @@ workflows:
       events:
         - push
     scripts:
-      - name: Hard Clean and Build APK
+      - name: Force Stable Android and Build
         script: |
-          # 1. تنظيف كاش فلاتر القديم والملفات المؤقتة تماماً
+          # 1. تنظيف شامل
           flutter clean
-          
-          # 2. حذف مجلد أندرويد المعطوب بأكمله
           rm -rf android
           
-          # 3. إعادة توليد مجلد أندرويد نظيف ومتوافق تلقائياً داخل المشروع
+          # 2. إنشاء مشروع أندرويد مستقر
           flutter create . --platforms=android
           
-          # 4. تحميل الحزم الصافية المحدثة
-          flutter pub get
+          # 3. تعديل ملف build.gradle لإجبار النظام على استخدام API 34 المستقر بدلاً من 36 التجريبي
+          sed -i '' 's/compileSdk = .*/compileSdk = 34/g' android/app/build.gradle || sed -i 's/compileSdk = .*/compileSdk = 34/g' android/app/build.gradle
+          sed -i '' 's/targetSdk = .*/targetSdk = 34/g' android/app/build.gradle || sed -i 's/targetSdk = .*/targetSdk = 34/g' android/app/build.gradle
           
-          # 5. البناء النهائي والمباشر لملف الـ APK
+          # 4. تحميل الحزم والبناء
+          flutter pub get
           flutter build apk --release --no-shrink
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
