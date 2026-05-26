@@ -9,24 +9,24 @@ workflows:
       events:
         - push
     scripts:
-      - name: Ultimate Android Repair and Build
+      - name: Strict Version Injection and Build
         script: |
-          # 1. تنظيف شامل وإزالة مخلفات المجلد القديم
+          # 1. تنظيف الكاش وإزالة المجلد القديم تماماً
           flutter clean
           rm -rf android
           
-          # 2. إنشاء مجلد أندرويد رسمي وصافي تماماً
-          flutter create . --platforms=android
+          # 2. إنشاء مشروع أندرويد وإجباره على استخدام توافقية إصدار مستقر (بإصدار أندرويد 14 / API 34)
+          flutter create . --platforms=android --org com.yzpro.ymai
           
-          # 3. إجبار ملفات الإعدادات على استخدام نظام أندرويد 14 المستقر (API 34)
-          # وتغيير أدوات البناء للتوافق التام مع فلاتر المستقر
-          TARGET_GRADLE="android/app/build.gradle"
-          if [ -f "$TARGET_GRADLE" ]; then
-            sed -i '' 's/compileSdk = .*/compileSdk = 34/g' "$TARGET_GRADLE" || sed -i 's/compileSdk = .*/compileSdk = 34/g' "$TARGET_GRADLE"
-            sed -i '' 's/targetSdk = .*/targetSdk = 34/g' "$TARGET_GRADLE" || sed -i 's/targetSdk = .*/targetSdk = 34/g' "$TARGET_GRADLE"
+          # 3. حقن مباشر داخل ملف الإعدادات لتعيين المعايير المستقرة يدوياً وقبل أي معالجة
+          CONFIG_FILE="android/app/build.gradle"
+          if [ -f "$CONFIG_FILE" ]; then
+            sed -i '' 's/compileSdk = .*/compileSdk = 34/g' "$CONFIG_FILE" || sed -i 's/compileSdk = .*/compileSdk = 34/g' "$CONFIG_FILE"
+            sed -i '' 's/targetSdk = .*/targetSdk = 34/g' "$CONFIG_FILE" || sed -i 's/targetSdk = .*/targetSdk = 34/g' "$CONFIG_FILE"
+            sed -i '' 's/minSdk = .*/minSdk = 21/g' "$CONFIG_FILE" || sed -i 's/minSdk = .*/minSdk = 21/g' "$CONFIG_FILE"
           fi
           
-          # 4. تحميل الحزم وبدء التجميع الرسمي للـ APK
+          # 4. بناء الـ APK النهائي المستقر
           flutter pub get
           flutter build apk --release --no-shrink
     artifacts:
