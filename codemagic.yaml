@@ -9,9 +9,10 @@ workflows:
       events:
         - push
     scripts:
-      - name: Clean and Build Application
+      - name: Recreate Android and Build
         script: |
-          flutter clean
+          rm -rf android
+          flutter create . --platforms=android
           flutter pub get
           flutter build apk --release --no-shrink
     artifacts:
