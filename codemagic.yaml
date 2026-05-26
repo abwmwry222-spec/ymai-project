@@ -9,21 +9,23 @@ workflows:
       events:
         - push
     scripts:
-      - name: Force Stable Android and Build
+      - name: Build isolated clean app
         script: |
-          # 1. تنظيف شامل
-          flutter clean
-          rm -rf android
+          # 1. الانتقال إلى المجلد المؤقت النظيف تماماً داخل السيرفر البعيد عن أي مخلفات
+          cd $CM_BUILD_DIR/..
           
-          # 2. إنشاء مشروع أندرويد مستقر
-          flutter create . --platforms=android
+          # 2. إنشاء تطبيق فلاتر فريش وجديد بالكامل يمتلك أحدث ملفات أندرويد و Gradle سليمة ومستقرة
+          flutter create pure_ymai_app --platforms=android
           
-          # 3. تعديل ملف build.gradle لإجبار النظام على استخدام API 34 المستقر بدلاً من 36 التجريبي
-          sed -i '' 's/compileSdk = .*/compileSdk = 34/g' android/app/build.gradle || sed -i 's/compileSdk = .*/compileSdk = 34/g' android/app/build.gradle
-          sed -i '' 's/targetSdk = .*/targetSdk = 34/g' android/app/build.gradle || sed -i 's/targetSdk = .*/targetSdk = 34/g' android/app/build.gradle
+          # 3. نسخ كود الواجهة السينمائية الاحترافي (main.dart) الذي كتبناه إلى المشروع النظيف
+          cp $CM_BUILD_DIR/lib/main.dart pure_ymai_app/lib/main.dart
           
-          # 4. تحميل الحزم والبناء
+          # 4. الدخول إلى المشروع النظيف وبناء الـ APK مباشرة وبشكل مستقر
+          cd pure_ymai_app
           flutter pub get
           flutter build apk --release --no-shrink
+          
+          # 5. نقل ملف الـ APK النهائي المستخرج بنجاح إلى المجلد الذي يتوقعه كود ماجيك ليرفعه لك
+          cp build/app/outputs/flutter-apk/app-release.apk $CM_BUILD_DIR/app-release.apk
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
+      - /*.apk
