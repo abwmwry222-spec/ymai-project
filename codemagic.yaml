@@ -8,10 +8,8 @@ workflows:
     triggering:
       events:
         - push
-      branches:
-        - main
     scripts:
-      - name: Clean and Build
+      - name: Clean and Build Application
         script: |
           flutter clean
           flutter pub get
