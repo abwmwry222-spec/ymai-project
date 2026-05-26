@@ -4,29 +4,31 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     environment:
-      flutter: stable
+      flutter: 3.19.0
+      java: 17
     triggering:
       events:
         - push
     scripts:
-      - name: Strict Version Injection and Build
+      - name: Reset and Build Android
         script: |
-          # 1. تنظيف الكاش وإزالة المجلد القديم تماماً
+          # 1. تنظيف شامل وكامل لكاش فلاتر القديم
           flutter clean
+          
+          # 2. حذف مجلد أندرويد المعطوب لإزالة الإعدادات التجريبية بالكامل
           rm -rf android
           
-          # 2. إنشاء مشروع أندرويد وإجباره على استخدام توافقية إصدار مستقر (بإصدار أندرويد 14 / API 34)
+          # 3. إعادة إنشاء مجلد أندرويد متوافق تلقائياً
           flutter create . --platforms=android --org com.yzpro.ymai
           
-          # 3. حقن مباشر داخل ملف الإعدادات لتعيين المعايير المستقرة يدوياً وقبل أي معالجة
-          CONFIG_FILE="android/app/build.gradle"
-          if [ -f "$CONFIG_FILE" ]; then
-            sed -i '' 's/compileSdk = .*/compileSdk = 34/g' "$CONFIG_FILE" || sed -i 's/compileSdk = .*/compileSdk = 34/g' "$CONFIG_FILE"
-            sed -i '' 's/targetSdk = .*/targetSdk = 34/g' "$CONFIG_FILE" || sed -i 's/targetSdk = .*/targetSdk = 34/g' "$CONFIG_FILE"
-            sed -i '' 's/minSdk = .*/minSdk = 21/g' "$CONFIG_FILE" || sed -i 's/minSdk = .*/minSdk = 21/g' "$CONFIG_FILE"
+          # 4. تعديل ملف build.gradle لتقييده بالإصدار المستقر Android 14 (API 34)
+          TARGET_GRADLE="android/app/build.gradle"
+          if [ -f "$TARGET_GRADLE" ]; then
+            sed -i '' 's/compileSdk = .*/compileSdk = 34/g' "$TARGET_GRADLE" || sed -i 's/compileSdk = .*/compileSdk = 34/g' "$TARGET_GRADLE"
+            sed -i '' 's/targetSdk = .*/targetSdk = 34/g' "$TARGET_GRADLE" || sed -i 's/targetSdk = .*/targetSdk = 34/g' "$TARGET_GRADLE"
           fi
           
-          # 4. بناء الـ APK النهائي المستقر
+          # 5. جلب الحزم وبناء الـ APK الصافي والمستقر
           flutter pub get
           flutter build apk --release --no-shrink
     artifacts:
