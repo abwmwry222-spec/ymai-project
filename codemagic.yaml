@@ -4,31 +4,15 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     environment:
-      flutter: 3.19.0
+      flutter: stable
       java: 17
     triggering:
       events:
         - push
     scripts:
-      - name: Reset and Build Android
+      - name: Production APK Build
         script: |
-          # 1. تنظيف شامل وكامل لكاش فلاتر القديم
           flutter clean
-          
-          # 2. حذف مجلد أندرويد المعطوب لإزالة الإعدادات التجريبية بالكامل
-          rm -rf android
-          
-          # 3. إعادة إنشاء مجلد أندرويد متوافق تلقائياً
-          flutter create . --platforms=android --org com.yzpro.ymai
-          
-          # 4. تعديل ملف build.gradle لتقييده بالإصدار المستقر Android 14 (API 34)
-          TARGET_GRADLE="android/app/build.gradle"
-          if [ -f "$TARGET_GRADLE" ]; then
-            sed -i '' 's/compileSdk = .*/compileSdk = 34/g' "$TARGET_GRADLE" || sed -i 's/compileSdk = .*/compileSdk = 34/g' "$TARGET_GRADLE"
-            sed -i '' 's/targetSdk = .*/targetSdk = 34/g' "$TARGET_GRADLE" || sed -i 's/targetSdk = .*/targetSdk = 34/g' "$TARGET_GRADLE"
-          fi
-          
-          # 5. جلب الحزم وبناء الـ APK الصافي والمستقر
           flutter pub get
           flutter build apk --release --no-shrink
     artifacts:
